@@ -5,6 +5,7 @@ import {
   getAccessToken,
   getRefreshToken,
 } from "./tokenStore";
+import { setUIHandlers } from "./uiStore";
 
 const UserContext = createContext();
 
@@ -12,21 +13,33 @@ export const UserProvider = ({
   children,
   token,
   refreshToken,
+  showAlert,        // ← passed from host: useAlert().showAlert
+  setLoader,        // ← passed from host: useAlert().setLoader
   onTokensRefreshed,
 }) => {
-  // Sync incoming props → module store
   useEffect(() => {
     setTokens(token, refreshToken);
   }, [token, refreshToken]);
 
-  // Let the package notify the host app when a refresh happens
+ 
+  useEffect(() => {
+    setUIHandlers({ showAlert, setLoader });
+  }, [showAlert, setLoader]);
+
   useEffect(() => {
     setOnTokensRefreshed(onTokensRefreshed);
   }, [onTokensRefreshed]);
 
   return (
     <UserContext.Provider
-      value={{ token, refreshToken, getAccessToken, getRefreshToken }}
+      value={{
+        token,
+        refreshToken,
+        showAlert,
+        setLoader,
+        getAccessToken,
+        getRefreshToken,
+      }}
     >
       {children}
     </UserContext.Provider>

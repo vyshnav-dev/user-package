@@ -6,10 +6,10 @@ var React = require('react');
 var reactRouterDom = require('react-router-dom');
 var axios = require('axios');
 var material = require('@mui/material');
-require('@mui/material/Alert');
-var jsxRuntime = require('react/jsx-runtime');
 var Breadcrumbs = require('@mui/material/Breadcrumbs');
 var NavigateNextIcon = require('@mui/icons-material/NavigateNext');
+require('@mui/material/Alert');
+var jsxRuntime = require('react/jsx-runtime');
 var Box = require('@mui/material/Box');
 var Table = require('@mui/material/Table');
 var TableBody = require('@mui/material/TableBody');
@@ -491,9 +491,32 @@ if (typeof window !== "undefined") {
   });
 }
 
-const AlertContext = /*#__PURE__*/React.createContext();
-const useAlert = () => {
-  return React.useContext(AlertContext);
+// src/uiStore.js
+// Holds callbacks the host app injects (showAlert, setLoader).
+// Used because axios interceptors and api helpers run outside React,
+// and because the package must not mount its own AlertProvider.
+
+let _showAlert = null;
+let _setLoader = null;
+const setUIHandlers = ({
+  showAlert,
+  setLoader
+}) => {
+  if (typeof showAlert === "function") _showAlert = showAlert;
+  if (typeof setLoader === "function") _setLoader = setLoader;
+};
+const showAlert = (type, message) => {
+  if (typeof _showAlert === "function") {
+    _showAlert(type, message);
+  } else {
+    // Fallback so missing wiring is visible but not fatal
+    console.warn("[user-package] showAlert not provided by host:", type, message);
+  }
+};
+const setLoader = value => {
+  if (typeof _setLoader === "function") {
+    _setLoader(value);
+  }
 };
 
 let isRefreshing = false;
@@ -578,17 +601,13 @@ securityApi.interceptors.response.use(response => {
 
 // ---------------- Custom hook ----------------
 const baseSecurityApis = () => {
-  const {
-    showAlert,
-    setLoader
-  } = useAlert();
+  // ✅ no useAlert() here — handlers come from the module-level store
+  // which UserProvider populated from the host's useAlert()
 
-  // ✅ Prefer in-memory store, fall back to localStorage
   const accessToken = getAccessToken() || localStorage.getItem("TimeCaptureAccessToken");
   const handleError = error => {
     if (!navigator.onLine) {
-      const errorMessage = "No internet connection";
-      showAlert("warning", errorMessage);
+      showAlert("warning", "No internet connection");
       return;
     }
     if (error.response && error.response.status) {
@@ -608,14 +627,12 @@ const baseSecurityApis = () => {
             break;
           }
         case 401:
-          // Handled by interceptor
           break;
         case 403:
           showAlert("warning", "Access denied, you do not have permission");
           break;
         case 404:
           if (error.response.statusText == "Not Found") {
-            error?.response?.data?.message;
             return;
           }
           break;
@@ -633,20 +650,12 @@ const baseSecurityApis = () => {
     }
   };
   const makeAuthorizedRequestBaseSecurity = async (method, url, params, isLoading = true) => {
-    if (isLoading) {
-      setLoader(true);
-    }
-
-    // ✅ Read token fresh at call time
+    if (isLoading) setLoader(true);
     const token = getAccessToken() || localStorage.getItem("TimeCaptureAccessToken");
     const headers = {
       Authorization: `Bearer ${token}`
     };
-    if (params instanceof FormData) {
-      delete headers["Content-Type"];
-    } else {
-      headers["Content-Type"] = "application/json";
-    }
+    if (params instanceof FormData) delete headers["Content-Type"];else headers["Content-Type"] = "application/json";
     try {
       let response;
       if (method === "get") {
@@ -657,10 +666,10 @@ const baseSecurityApis = () => {
         });
       } else {
         response = await securityApi({
-          method: method,
-          url: url,
+          method,
+          url,
           data: params,
-          headers: headers
+          headers
         });
       }
       return response;
@@ -669,9 +678,7 @@ const baseSecurityApis = () => {
       handleError(error);
       throw error?.response?.data || error;
     } finally {
-      if (isLoading) {
-        setLoader(false);
-      }
+      if (isLoading) setLoader(false);
     }
   };
   return {
@@ -1054,6 +1061,11 @@ const securityApis = () => {
     syncmaster,
     GetTagList
   };
+};
+
+const AlertContext = /*#__PURE__*/React.createContext();
+const useAlert = () => {
+  return React.useContext(AlertContext);
 };
 
 function TableButton({
@@ -7798,14 +7810,21 @@ const UserProvider = ({
   children,
   token,
   refreshToken,
+  showAlert,
+  // ← passed from host: useAlert().showAlert
+  setLoader,
+  // ← passed from host: useAlert().setLoader
   onTokensRefreshed
 }) => {
-  // Sync incoming props → module store
   React.useEffect(() => {
     setTokens(token, refreshToken);
   }, [token, refreshToken]);
-
-  // Let the package notify the host app when a refresh happens
+  React.useEffect(() => {
+    setUIHandlers({
+      showAlert,
+      setLoader
+    });
+  }, [showAlert, setLoader]);
   React.useEffect(() => {
     setOnTokensRefreshed(onTokensRefreshed);
   }, [onTokensRefreshed]);
@@ -7813,6 +7832,8 @@ const UserProvider = ({
     value: {
       token,
       refreshToken,
+      showAlert,
+      setLoader,
       getAccessToken: getAccessToken$1,
       getRefreshToken
     },

@@ -4,7 +4,7 @@ import {
   refreshToken,
   getAccessToken as storeGetAccessToken,
 } from "./tokenUtils";
-import { useAlert } from "../../commonComponent/Alerts/AlertContext";
+import { showAlert as uiShowAlert, setLoader as uiSetLoader } from "../../uiStore";
 
 let isRefreshing = false;
 let failedQueue = [];
@@ -133,16 +133,15 @@ securityApi.interceptors.response.use(
 
 // ---------------- Custom hook ----------------
 const baseSecurityApis = () => {
-  const { showAlert, setLoader } = useAlert();
+  // ✅ no useAlert() here — handlers come from the module-level store
+  // which UserProvider populated from the host's useAlert()
 
-  // ✅ Prefer in-memory store, fall back to localStorage
   const accessToken =
     storeGetAccessToken() || localStorage.getItem("TimeCaptureAccessToken");
 
   const handleError = (error) => {
     if (!navigator.onLine) {
-      const errorMessage = "No internet connection";
-      showAlert("warning", errorMessage);
+      uiShowAlert("warning", "No internet connection");
       return;
     }
 
@@ -154,40 +153,35 @@ const baseSecurityApis = () => {
             : null;
 
           if (result && Array.isArray(result) && result[0]?.ErrorMessage) {
-            showAlert("info", result[0]?.ErrorMessage);
+            uiShowAlert("info", result[0]?.ErrorMessage);
           } else if (error?.response?.data?.statusCode == 4000) {
-            showAlert("info", error?.response?.data?.message);
+            uiShowAlert("info", error?.response?.data?.message);
           } else if (
             error?.response?.data?.statusCode == 1000 ||
             error?.response?.data?.statusCode == 1001
           ) {
-            showAlert("error", "Database Error");
+            uiShowAlert("error", "Database Error");
           } else {
-            showAlert("error", error?.response?.data?.message);
+            uiShowAlert("error", error?.response?.data?.message);
           }
           break;
         }
 
         case 401:
-          // Handled by interceptor
           break;
 
         case 403:
-          showAlert(
-            "warning",
-            "Access denied, you do not have permission"
-          );
+          uiShowAlert("warning", "Access denied, you do not have permission");
           break;
 
         case 404:
           if (error.response.statusText == "Not Found") {
-            const dbNoData = error?.response?.data?.message;
             return;
           }
           break;
 
         case 409:
-          showAlert("error", error?.response?.data?.message);
+          uiShowAlert("error", error?.response?.data?.message);
           break;
 
         case 500:
@@ -210,65 +204,47 @@ const baseSecurityApis = () => {
     params,
     isLoading = true
   ) => {
-    if (isLoading) {
-      setLoader(true);
-    }
+    if (isLoading) uiSetLoader(true);
 
-    // ✅ Read token fresh at call time
     const token =
       storeGetAccessToken() || localStorage.getItem("TimeCaptureAccessToken");
 
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-
-    if (params instanceof FormData) {
-      delete headers["Content-Type"];
-    } else {
-      headers["Content-Type"] = "application/json";
-    }
+    const headers = { Authorization: `Bearer ${token}` };
+    if (params instanceof FormData) delete headers["Content-Type"];
+    else headers["Content-Type"] = "application/json";
 
     try {
       let response;
-
       if (method === "get") {
         const queryParams = params
           ? Object.keys(params)
               .map(
                 (key) =>
-                  `${encodeURIComponent(key)}=${encodeURIComponent(
-                    params[key]
-                  )}`
+                  `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
               )
               .join("&")
           : "";
         const requestUrl = queryParams ? `${url}?${queryParams}` : url;
-
         response = await securityApi.get(requestUrl, { headers });
       } else {
         response = await securityApi({
-          method: method,
-          url: url,
+          method,
+          url,
           data: params,
-          headers: headers,
+          headers,
         });
       }
-
       return response;
     } catch (error) {
       console.error(`Error in ${method.toUpperCase()} ${url}:`, error);
       handleError(error);
       throw error?.response?.data || error;
     } finally {
-      if (isLoading) {
-        setLoader(false);
-      }
+      if (isLoading) uiSetLoader(false);
     }
   };
 
-  return {
-    makeAuthorizedRequestBaseSecurity,
-  };
+  return { makeAuthorizedRequestBaseSecurity };
 };
 
 export { baseSecurityApis };

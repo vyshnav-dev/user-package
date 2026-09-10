@@ -3,10 +3,10 @@ import React__default, { useContext, createContext, useState, useRef, useEffect,
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Button, Autocomplete, Paper, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Tooltip, IconButton as IconButton$1, useTheme, Box as Box$1, Stack, ListSubheader, InputAdornment, Dialog as Dialog$1, DialogContent as DialogContent$1, CircularProgress, styled as styled$1, Avatar } from '@mui/material';
-import '@mui/material/Alert';
-import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import '@mui/material/Alert';
+import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -433,9 +433,32 @@ if (typeof window !== "undefined") {
   });
 }
 
-const AlertContext = /*#__PURE__*/createContext();
-const useAlert = () => {
-  return useContext(AlertContext);
+// src/uiStore.js
+// Holds callbacks the host app injects (showAlert, setLoader).
+// Used because axios interceptors and api helpers run outside React,
+// and because the package must not mount its own AlertProvider.
+
+let _showAlert = null;
+let _setLoader = null;
+const setUIHandlers = ({
+  showAlert,
+  setLoader
+}) => {
+  if (typeof showAlert === "function") _showAlert = showAlert;
+  if (typeof setLoader === "function") _setLoader = setLoader;
+};
+const showAlert = (type, message) => {
+  if (typeof _showAlert === "function") {
+    _showAlert(type, message);
+  } else {
+    // Fallback so missing wiring is visible but not fatal
+    console.warn("[user-package] showAlert not provided by host:", type, message);
+  }
+};
+const setLoader = value => {
+  if (typeof _setLoader === "function") {
+    _setLoader(value);
+  }
 };
 
 let isRefreshing = false;
@@ -520,17 +543,13 @@ securityApi.interceptors.response.use(response => {
 
 // ---------------- Custom hook ----------------
 const baseSecurityApis = () => {
-  const {
-    showAlert,
-    setLoader
-  } = useAlert();
+  // ✅ no useAlert() here — handlers come from the module-level store
+  // which UserProvider populated from the host's useAlert()
 
-  // ✅ Prefer in-memory store, fall back to localStorage
   const accessToken = getAccessToken() || localStorage.getItem("TimeCaptureAccessToken");
   const handleError = error => {
     if (!navigator.onLine) {
-      const errorMessage = "No internet connection";
-      showAlert("warning", errorMessage);
+      showAlert("warning", "No internet connection");
       return;
     }
     if (error.response && error.response.status) {
@@ -550,14 +569,12 @@ const baseSecurityApis = () => {
             break;
           }
         case 401:
-          // Handled by interceptor
           break;
         case 403:
           showAlert("warning", "Access denied, you do not have permission");
           break;
         case 404:
           if (error.response.statusText == "Not Found") {
-            error?.response?.data?.message;
             return;
           }
           break;
@@ -575,20 +592,12 @@ const baseSecurityApis = () => {
     }
   };
   const makeAuthorizedRequestBaseSecurity = async (method, url, params, isLoading = true) => {
-    if (isLoading) {
-      setLoader(true);
-    }
-
-    // ✅ Read token fresh at call time
+    if (isLoading) setLoader(true);
     const token = getAccessToken() || localStorage.getItem("TimeCaptureAccessToken");
     const headers = {
       Authorization: `Bearer ${token}`
     };
-    if (params instanceof FormData) {
-      delete headers["Content-Type"];
-    } else {
-      headers["Content-Type"] = "application/json";
-    }
+    if (params instanceof FormData) delete headers["Content-Type"];else headers["Content-Type"] = "application/json";
     try {
       let response;
       if (method === "get") {
@@ -599,10 +608,10 @@ const baseSecurityApis = () => {
         });
       } else {
         response = await securityApi({
-          method: method,
-          url: url,
+          method,
+          url,
           data: params,
-          headers: headers
+          headers
         });
       }
       return response;
@@ -611,9 +620,7 @@ const baseSecurityApis = () => {
       handleError(error);
       throw error?.response?.data || error;
     } finally {
-      if (isLoading) {
-        setLoader(false);
-      }
+      if (isLoading) setLoader(false);
     }
   };
   return {
@@ -996,6 +1003,11 @@ const securityApis = () => {
     syncmaster,
     GetTagList
   };
+};
+
+const AlertContext = /*#__PURE__*/createContext();
+const useAlert = () => {
+  return useContext(AlertContext);
 };
 
 function TableButton({
@@ -7740,14 +7752,21 @@ const UserProvider = ({
   children,
   token,
   refreshToken,
+  showAlert,
+  // ← passed from host: useAlert().showAlert
+  setLoader,
+  // ← passed from host: useAlert().setLoader
   onTokensRefreshed
 }) => {
-  // Sync incoming props → module store
   useEffect(() => {
     setTokens(token, refreshToken);
   }, [token, refreshToken]);
-
-  // Let the package notify the host app when a refresh happens
+  useEffect(() => {
+    setUIHandlers({
+      showAlert,
+      setLoader
+    });
+  }, [showAlert, setLoader]);
   useEffect(() => {
     setOnTokensRefreshed(onTokensRefreshed);
   }, [onTokensRefreshed]);
@@ -7755,6 +7774,8 @@ const UserProvider = ({
     value: {
       token,
       refreshToken,
+      showAlert,
+      setLoader,
       getAccessToken: getAccessToken$1,
       getRefreshToken
     },
