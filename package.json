@@ -1,11 +1,21 @@
 {
   "name": "@your-org/user-package",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Reusable user management module",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "rollup -c",
+    "prepare": "npm run build",
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
@@ -23,8 +33,5 @@
     "@rollup/plugin-commonjs": "^29.0.3",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "rollup": "^2.80.0"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }
