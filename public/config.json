@@ -1,0 +1,17 @@
+{
+    "SecurityBaseUrl":"http://103.120.178.195/CommonAPI/Sang.AccessController.API/",
+    "primaryColor" :"#4B6648",
+    "secondaryColor" :"#d8e7cdff",
+    "thirdColor":"#4B6648",
+    "rowEvenColor":"#d2e8f5ff",
+    "selectedColor" :"#74a06fff",
+    "backgroundColor" :"#f2f0f0",
+    "profileDateFields":"Date,Created Date,Stock Date,Cust Req Date,Pioneer Delivery Date,Delivery Date,DeliveryDate,Job Date,Customer Requsted Date,Created On,CreatedOn,Modified On,ModifiedOn,Required Date,Customer Date,Timesheet Date,Job Completion Date,JobCompletionDate",
+    "rowsPerSheet":50000,
+    "ChannelId":1,
+    "allowedExtensionsUser":["jpg", "jpeg", "png", "gif"],
+    "transactionDateTimeFields":"Created At,Modified At,CreatedAt,ModifiedAt,Created On,CreatedOn,ModifiedOn,Modified On",
+    "FolderPath":"/TimeCapturingAndMonitoringSystem/WWPS/UI/"
+    
+    
+}

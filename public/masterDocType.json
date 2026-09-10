@@ -1,0 +1,145 @@
+{
+  "MastersTagId": {
+    "Account": 20000,
+    "Customer": 1,
+    "Outlet": 16,
+    "Product": 2,
+    "Unit": 11,
+    "Warehouse": 13,
+    "Salesman": 30,
+    "ProductType": 12,
+    "Bank": 18,
+    "CustomerCategory": 35,
+    "TimeZone": 7,
+    "ProductCategory": 35,
+    "Location": 26,
+    "SalesmanTargetCategory": 32,
+    "SalesmanTarget": 17,
+    "ActivityList": 36,
+    "OutletCategory": 37,
+    "BE": 1,
+    "Country": 8,
+    "DiscountType": 3019,
+    "PayTerms": 3037,
+    "AccountType": 9
+  },
+  
+ 
+  
+  "FixedValues": {
+    "DisplayDecimals": 0,
+    "RoundingDecimals": 0,
+    "MinDisplayDecimals": 0,
+    "SalesScreenMenuId": 69,
+    "DashBoardMenuId": 21,
+    "NotificationMenuId": 53,
+    "OrderSalesScreenMenuId": 76,
+    "ReportWeekStartDay": 6,
+    "SalesScreenMenuIdMob": 18,
+    "EmailScreenDocType": [
+      {
+        "Id": 3,
+        "Name": "Request"
+      },
+      {
+        "Id": 1,
+        "Name": "Order"
+      },
+      {
+        "Id": 38,
+        "Name": "Daily"
+      },
+      {
+        "Id": 39,
+        "Name": "Weekly"
+      }
+    ],
+    "OffloadDocType": 19,
+    "UploadDocType": 20,
+    "TransferDocType": 22,
+    "OffloadVerificationDocType": 24,
+    "SalesOrderDocType": 40,
+    "OrderDocType": 1,
+    "SalesDocType": 2
+  },
+  "preference": {
+    "DecimalAmount": 2,
+    "DecimalQty": 0,
+    "MaxAmount": 0,
+    "MaxQty": 0,
+    "RoundingAmount": 3,
+    "RoundingQty": 0
+  },
+  "timesheetColumns": "JobDate,JobNo,Machinist,StartTime,PauseTime,IdleRemarks,CreatedBy,Department,Description",
+  "calloutjobColumns": "JobDate,JobNo,Machinist,CreatedBy,DeliveryDate,Customer,EstimatedTime,TotalTime,Variance,CRMJob,Department,JobType,Description",
+  "searchColumns": "JobDate,JobNo,Machinist,CreatedBy,DeliveryDate,Customer,EstimatedTime,TotalTime,Variance,Department,JobType,Description",
+  "awaitstopColumns": "SlNo,Qty,JobNo,Machinist,StartTime,EndTime,Department",
+  "transactionSummaryColumns": "DocNo,CreatedOn,Date,Department,Narration,Status,CreatedBy,ModifiedOn,ModifiedBy",
+  "bulkupdteColumns": "JobDate,Job_Name,Machinist_Name,StartTime,PauseTime,IdleRemarks,CreatedBy,Department_Name,Description,ResumeTime,EndTime,Status,Service_Name,Quantity,Reason_Name,Machine_Name,DocNo,TimesheetDate",
+  "TagLanguageBasedValues": {
+    "english": {
+      "TagEntityDetailscaption": "Tag Entity Details",
+      "specialCharacter": "Special characters are not allowed",
+      "negative": "Negative values are not allowed.",
+      "minimumValue": "Minimum value",
+      "maximumValue": "MaximumValue",
+      "invalidInput": "Invalid input",
+      "exceedMaxLength": "The maximum limit of characters has been reached",
+      "integer": "must be a valid integer",
+      "regularExpression": "Regular Expression Missmatch",
+      "languageTabAdd": "Please Provide",
+      "languageTabLangExist": "Language already exists",
+      "tagDetailMandatory": "is required",
+      "invalidDate": "Invalid date format",
+      "dateError1": "Only Future dates are allowed.",
+      "dateError2": "Only Past dates are allowed.",
+      "dateError3": "Only today's date is allowed.",
+      "dateError4": "Only today or future dates are allowed.",
+      "dateError5": "Only today or past dates are allowed.",
+      "invalidTime": "Invalid time format",
+      "invalidDateTime": "Invalid date and time format",
+      "invalidGeography": "Invalid geographic coordinates",
+      "invalidBoolean": "Invalid value.Please Change",
+      "invalidTag": "Invalid Drop down value.Please change",
+      "saveMessage": "Do you want to Save",
+      "saveButton": "Save",
+      "draftButton": "Draft",
+      "saveTitle": "Save",
+      "closeButton": "Close",
+      "EntityList": "Entered List",
+      "selectEntity": "Select Entity",
+      "attachmentsCaption": "Attachments",
+      "DocumentType": "Document Type",
+      "ReferenceNumber": "Reference Number",
+      "File": "File",
+      "Delete": "Delete",
+      "Edit": "Edit",
+      "DeleteMessage": "Do you want to Delete",
+      "AddTag": "Add Tag",
+      "AddTagMessage": "Do you want to Add : ",
+      "Proceed": "Proceed",
+      "ShowEntries": "Show Entries",
+      "Search": "Search",
+      "SelectRow": "Please Select Atleast One Row",
+      "SelectOnlyOne": "Please Select  One Row Only",
+      "name": "Name",
+      "code": "Code",
+      "noUserViewTagDetail": "No View Available for Current User",
+      "NewButton": "New",
+      "NoScreenAccess": "No Access",
+      "dropChildError": "Can't move to a child",
+      "addButton": "Add",
+      "tagattachementType": "Allowed File type",
+      "tagFileMissing": "Attachment is missing",
+      "nameExist": "Name already exists",
+      "codeExist": "Code already exists",
+      "entityExist": "Entity already  exists"
+    }
+  },
+  "tagFieldLanguageDirection": {
+    "english": {
+      "direction": "ltr",
+      "fontFamily": "Arial, sans-serif"
+    }
+  }
+}
