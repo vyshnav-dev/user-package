@@ -7615,21 +7615,7 @@ function UserDetails({
             languageName: "english",
             ColumnSpan: 0,
             Menu: status
-          }, "status"), /*#__PURE__*/jsx(UserInputField, {
-            label: "Mobile",
-            name: "Mobile",
-            type: "text",
-            disabled: false,
-            value: mainDetails,
-            setValue: setMainDetails
-          }), /*#__PURE__*/jsx(UserInputField, {
-            label: "Phone",
-            name: "Phone",
-            type: "text",
-            disabled: false,
-            value: mainDetails,
-            setValue: setMainDetails
-          }), /*#__PURE__*/jsx(Box$1, {
+          }, "status"), /*#__PURE__*/jsx(Box$1, {
             sx: {
               display: "flex",
               width: "100%",

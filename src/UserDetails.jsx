@@ -950,7 +950,7 @@ export default function UserDetails({
 
             />
 
-            <UserInputField
+            {/* <UserInputField
               label={"Mobile"}
               name={"Mobile"}
               type={"text"}
@@ -967,7 +967,7 @@ export default function UserDetails({
               disabled={false}
               value={mainDetails}
               setValue={setMainDetails}
-            />
+            /> */}
 
 
             <Box sx={{
