@@ -1,7 +1,6 @@
 {
   "name": "@your-org/user-package",
-  "version": "1.0.3",
-  "description": "Reusable user management module",
+  "version": "1.0.4",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "exports": {
@@ -15,23 +14,6 @@
   ],
   "scripts": {
     "build": "rollup -c",
-    "prepare": "npm run build",
     "prepublishOnly": "npm run build"
-  },
-  "peerDependencies": {
-    "@mui/material": "^5.0.0 || ^6.0.0",
-    "react": ">=17.0.0",
-    "react-dom": ">=17.0.0",
-    "react-router-dom": "^6.0.0"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.29.7",
-    "@babel/preset-env": "^7.29.7",
-    "@babel/preset-react": "^7.29.7",
-    "@rollup/plugin-babel": "^7.1.0",
-    "@rollup/plugin-commonjs": "^29.0.3",
-    "@rollup/plugin-node-resolve": "^16.0.3",
-    "rollup": "^2.80.0"
   }
 }
