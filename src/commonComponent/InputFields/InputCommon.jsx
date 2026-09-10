@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import { validateInput } from "./ValidateInput";
-import { useAlert } from "../Alerts/AlertContext";
+import { showAlert as uiShowAlert, setLoader as uiSetLoader } from "../../uiStore";
 import { FixedValues } from "../../config/config";
 
 const CustomTextField = styled(TextField)({
@@ -77,9 +77,6 @@ export default function InputCommon({
   onKeyDown
 }) {
 
-
-
-    const { showAlert } = useAlert();
   
 
   const [inputValue, setInputValue] = useState(value || "");
@@ -220,23 +217,23 @@ export default function InputCommon({
        
         
         if (errorResponse == errorMessages.minimumValue) {
-          showAlert("info", `Minimum value is ${MinimumValue}`);
+          uiShowAlert("info", `Minimum value is ${MinimumValue}`);
           newValue = parseFloat(MinimumValue);
           // return;  // Prevent updating the value when less than MinimumValue
         }
         if (errorResponse == errorMessages.maximumValue) {
-          showAlert("info", `Maximum value is : ${MaximumValue}`);
+          uiShowAlert("info", `Maximum value is : ${MaximumValue}`);
           newValue = parseFloat(MaximumValue);
           // return;  // Prevent updating the value when less than MinimumValue
         }
         if (errorResponse == errorMessages.allowNegative) {
-          showAlert("info", `Negative value not allowed`);
+          uiShowAlert("info", `Negative value not allowed`);
           newValue = "";
           // return;  // Prevent updating the value when less than MinimumValue
         }
         
         if (errorResponse == errorMessages.regexFailed) {
-          //showAlert("info", `Regular expresion mismatch`);
+          //uiShowAlert("info", `Regular expresion mismatch`);
           newValue = "";
           // return;  // Prevent updating the value when less than MinimumValue
         }
@@ -287,22 +284,22 @@ export default function InputCommon({
         newValue = parseInt(newValue, 10);
 
         if (errorResponse == errorMessages.minimumValue) {
-          showAlert("info", `Minimum value is : ${MinimumValue}`);
+          uiShowAlert("info", `Minimum value is : ${MinimumValue}`);
           newValue = parseInt(MinimumValue, 10);
           // return;  // Prevent updating the value when less than MinimumValue
         }
         if (errorResponse == errorMessages.maximumValue) {
-          showAlert("info", `Maximum value is : ${MaximumValue}`);
+          uiShowAlert("info", `Maximum value is : ${MaximumValue}`);
           newValue = parseFloat(MaximumValue);
           // return;  // Prevent updating the value when less than MinimumValue
         }
         if (errorResponse == errorMessages.allowNegative) {
-          showAlert("info", `Negative values not allowed`);
+          uiShowAlert("info", `Negative values not allowed`);
           newValue = "";
           // return;  // Prevent updating the value when less than MinimumValue
         }
         if (errorResponse == errorMessages.integerRange) {
-          showAlert(
+          uiShowAlert(
             "info",
             `Value should be with in [${minValue},${maxValue}]`
           );
@@ -361,22 +358,22 @@ export default function InputCommon({
         newValue = BigInt(newValue);
    
         if (errorResponse == errorMessages.minimumValue) {
-          showAlert("info", `Minimum value is : ${MinimumValue}`);
+          uiShowAlert("info", `Minimum value is : ${MinimumValue}`);
           newValue = BigInt(MinimumValue);
           // return;  // Prevent updating the value when less than MinimumValue
         }
         if (errorResponse == errorMessages.maximumValue) {
-          showAlert("info", `Maximum value is : ${MaximumValue}`);
+          uiShowAlert("info", `Maximum value is : ${MaximumValue}`);
           newValue = BigInt(MaximumValue);
           // return;  // Prevent updating the value when less than MinimumValue
         }
         if (errorResponse == errorMessages.allowNegative) {
-          showAlert("info", `Negative values not allowed`);
+          uiShowAlert("info", `Negative values not allowed`);
           newValue = "";
           // return;  // Prevent updating the value when less than MinimumValue
         }
         if (errorResponse == errorMessages.integerRange) {
-          showAlert(
+          uiShowAlert(
             "info",
             `Value should be with in [${minValue},${maxValue}]`
           );
@@ -445,18 +442,18 @@ export default function InputCommon({
      
         });
         if (errorResponse == errorMessages.specialCharacter) {
-          showAlert("info", `special characters not allowed`);
+          uiShowAlert("info", `special characters not allowed`);
           newValue = ""; // Reset value if invalid
         }
         if (errorResponse == errorMessages.maxSize) {
           newValue = newValue.substring(0, maxLength); // Truncate to max length
-          showAlert("info", `maximum length reached`);
+          uiShowAlert("info", `maximum length reached`);
         }
         // Regular expression validation for text fields
         if (RegularExpression) {
           
           if (errorResponse == errorMessages.regexFailed) {
-            //showAlert("info", `regular expression mismatch`);
+            //uiShowAlert("info", `regular expression mismatch`);
             newValue = "";
             // return;  // Prevent updating the value when less than MinimumValue
           }
@@ -515,19 +512,19 @@ export default function InputCommon({
           newValue = newValue.toLowerCase(); // Convert to lowercase
         }
         if (!validateSpecialChars(newValue)) {
-          showAlert("info", `special characters not allowed`);
+          uiShowAlert("info", `special characters not allowed`);
           return;
         }
         // Enforce maxLength here
         if (maxLength && newValue.length > maxLength) {
           newValue = newValue.substring(0, maxLength); // Truncate to max length
-          showAlert("info", `maximum length reached`);
+          uiShowAlert("info", `maximum length reached`);
         }
       }
 
       // Allow only integers if field type is integer
       // if (['tiny integer','small integer', 'big integer', 'integer'].includes(type) && newValue && !AllowNegative && newValue < 0) {
-      //   showAlert('info', 'Negative values are not allowed');
+      //   uiShowAlert('info', 'Negative values are not allowed');
       //   newValue = 0;
       // }
       if (
@@ -537,7 +534,7 @@ export default function InputCommon({
         newValue = newValue.replace(/,/g, "");
 
         if (!AllowNegative && parseInt(newValue,10) < 0) {
-          showAlert("info", `Negative values not allowed`);
+          uiShowAlert("info", `Negative values not allowed`);
           newValue = "";
         }
         // Allow only numbers and decimal points
@@ -553,7 +550,7 @@ export default function InputCommon({
         // Parse the value as an integer
         let parsedValue = parseInt(newValue, 10);
         if (isNaN(parsedValue)) {
-          showAlert("info", `Invalid integer`);
+          uiShowAlert("info", `Invalid integer`);
           return;
         }
 
@@ -562,7 +559,7 @@ export default function InputCommon({
 
         // Ensure the value is within the range
         if (parsedValue < minValue || parsedValue > maxValue) {
-          showAlert(
+          uiShowAlert(
             "info",
             `Value should be with in [${minValue},${maxValue}]`
           );
@@ -570,7 +567,7 @@ export default function InputCommon({
         }
 
         if (MaximumValue != null && parsedValue > MaximumValue) {
-          showAlert("info", `Maximum value is : ${MaximumValue}`);
+          uiShowAlert("info", `Maximum value is : ${MaximumValue}`);
           return; // Prevent updating the value when greater than MaximumValue
         }
         // Set the parsed integer value
@@ -594,7 +591,7 @@ export default function InputCommon({
         newValue = newValue.replace(/,/g, "");
 
         if (!AllowNegative && newValue < 0) {
-          showAlert("info", `Negative values not allowed`);
+          uiShowAlert("info", `Negative values not allowed`);
           newValue = "";
         }
         if (!/^[+-]?\d*$/.test(newValue)) {
@@ -614,7 +611,7 @@ export default function InputCommon({
 
         // Ensure the value is within the range
         if (parsedValue < BigInt(minValue) || parsedValue > BigInt(maxValue)) {
-          showAlert(
+          uiShowAlert(
             "info",
             `Value should be with in [${minValue},${maxValue}]`
           );
@@ -622,7 +619,7 @@ export default function InputCommon({
         }
 
         if (MaximumValue != null && parsedValue > (MaximumValue)) {
-          showAlert("info", `Maximum value is : ${MaximumValue}`);
+          uiShowAlert("info", `Maximum value is : ${MaximumValue}`);
           return; // Prevent updating the value when greater than MaximumValue
         }
 
@@ -648,7 +645,7 @@ export default function InputCommon({
       if (type === InputType.numeric && newValue) {
         newValue = newValue.replace(/,/g, "");
         if (!AllowNegative && parseFloat(newValue) < 0) {
-          showAlert("info", `Negative values not allowed`);
+          uiShowAlert("info", `Negative values not allowed`);
           newValue = "";
         }
          // Allow only valid numeric values, including a single decimal point
@@ -695,7 +692,7 @@ export default function InputCommon({
         // Check if regular expression is provided for decimal precision
         if (RegularExpression && maxFractionDigits) {
           if (!regex.test(newValue)) {
-            //showAlert("info", `regular expression mismatch`);
+            //uiShowAlert("info", `regular expression mismatch`);
             return; // Reset value if it doesn't match the regular expression
           }
         }
@@ -705,7 +702,7 @@ export default function InputCommon({
           newValue &&
           parseFloat(newValue) > MaximumValue
         ) {
-          showAlert("info", `Maximum value is : ${MaximumValue}`);
+          uiShowAlert("info", `Maximum value is : ${MaximumValue}`);
           // Remove the last character from newValue until it fits the range
           while (parseFloat(newValue) > MaximumValue) {
             newValue = newValue.slice(0, -1); // Remove last character

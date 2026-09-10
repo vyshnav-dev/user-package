@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { debounce } from "lodash";
 import { primaryColor, secondaryColor, thirdColor } from "../../config/config";
-import { useAlert } from "../Alerts/AlertContext";
 
 export default function UserAutoComplete({
   apiKey,
@@ -31,7 +30,6 @@ export default function UserAutoComplete({
   const [autoCompleteKey, setAutoCompleteKey] = useState(0);
   const focusedRef = useRef(false); // Use ref to track focus state
   const highlightRef = useRef(false); // Separate ref to track component focus state
-  const { showAlert } = useAlert();
 
   const handleAutocompleteChange = (event, newValue) => {
     if (newValue) {

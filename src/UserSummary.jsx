@@ -3,7 +3,7 @@ import { Box, Typography, Stack, useTheme } from "@mui/material";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { useNavigate } from "react-router-dom";
-import { useAlert } from "./commonComponent/Alerts/AlertContext";
+import { showAlert as uiShowAlert, setLoader as uiSetLoader } from "./uiStore";
 import SummaryTable from "./commonComponent/Table/SummaryTable";
 import ConfirmationAlert from "./commonComponent/Alerts/ConfirmationAlert";
 import ExcelExport from "./commonComponent/Excel/Excel";
@@ -131,7 +131,6 @@ export default function UserSummary({ setPageRender, setId, userAction }) {
   const [refreshFlag, setrefreshFlag] = React.useState(true); //To take data from Data base
   const [searchKey, setsearchKey] = useState(""); //Table Searching
   const [totalPages, setTotalPages] = useState(null);
-  const { showAlert } = useAlert();
   const [confirmAlert, setConfirmAlert] = useState(false); //To handle alert open
   const [confirmData, setConfirmData] = useState({}); //To pass alert data
   const latestSearchKeyRef = useRef(searchKey);
@@ -256,7 +255,7 @@ export default function UserSummary({ setPageRender, setId, userAction }) {
   const handleAdd = (value) => {
     if (value === "edit") {
       if (selectedDatas.length !== 1) {
-        showAlert(
+        uiShowAlert(
           "info",
           selectedDatas.length === 0
             ? "Select User to Edit "
@@ -274,7 +273,7 @@ export default function UserSummary({ setPageRender, setId, userAction }) {
   //Delete alert open
   const deleteClick = async () => {
     if (selectedDatas.length === 0) {
-      showAlert("info", "Select User to Delete");
+      uiShowAlert("info", "Select User to Delete");
       return;
     }
     setConfirmData({ message: "Delete", type: "danger" });
@@ -291,7 +290,7 @@ export default function UserSummary({ setPageRender, setId, userAction }) {
       let response = await deleteuser(deletePayload);
 
       if (response?.status === "Success") {
-        showAlert("success", response?.message);
+        uiShowAlert("success", response?.message);
       }
     } catch (error) {
     } finally {

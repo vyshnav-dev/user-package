@@ -26,7 +26,7 @@ import { securityApis } from "./Infrastructure/security/security";
 import { encrypt } from "./Infrastructure/security/encryptionUtils";
 import ActionButton from "./commonComponent/Buttons/ActionButton";
 import { allowedExtensionsUser,primaryColor } from "./config/config";
-import { useAlert } from "./commonComponent/Alerts/AlertContext";
+import { showAlert as uiShowAlert, setLoader as uiSetLoader } from "./uiStore";
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -196,7 +196,6 @@ export default function UserDetails({
     GetTagList
   } = securityApis();
 
-  const { showAlert } = useAlert();
 
 
   //   useEffect(() => {
@@ -360,7 +359,7 @@ export default function UserDetails({
         if (!mainDetails.LoginName) {
           emptyFields.push("Login Name");
         } else if (!namePattern.test(mainDetails.LoginName)) {
-          showAlert("info", "Login Name must contain at least one letter.");
+          uiShowAlert("info", "Login Name must contain at least one letter.");
           return;
         }
         if (!mainDetails.Role) emptyFields.push("Role");
@@ -385,7 +384,7 @@ export default function UserDetails({
         // if (!mainDetails.signature_preview)
         //   emptyFields.push("Signature");
         if (emptyFields.length > 0) {
-          showAlert("info", `Please Provide ${emptyFields[0]}`);
+          uiShowAlert("info", `Please Provide ${emptyFields[0]}`);
           return;
         }
         // if (
@@ -402,11 +401,11 @@ export default function UserDetails({
         // }
         if (detailPageId === 0) {
           if (passwordPolicy.MinLength > 0 && mainDetails.Password.length < passwordPolicy.MinLength) {
-            showAlert("info", `Password must be at least ${passwordPolicy.MinLength} characters long.`);
+            uiShowAlert("info", `Password must be at least ${passwordPolicy.MinLength} characters long.`);
             return;
           }
           if (!new RegExp(passwordPolicy.PolicyRegExp).test(mainDetails.Password)) {
-            showAlert("info", passwordPolicy.Description || "Password does not meet the required policy.");
+            uiShowAlert("info", passwordPolicy.Description || "Password does not meet the required policy.");
             return;
           }
         }
@@ -414,7 +413,7 @@ export default function UserDetails({
           mainDetails.Password !== mainDetails.CPassword &&
           detailPageId === 0
         ) {
-          showAlert("info", `Incorrect Password`);
+          uiShowAlert("info", `Incorrect Password`);
           return;
         }
         // if ((mainDetails.UserType==2 || mainDetails.UserType==3)&& !mainDetails?.Vendor){
@@ -479,7 +478,7 @@ export default function UserDetails({
 
         await handleFileUpload(numericId);
       }
-      showAlert("success", response?.message);
+      uiShowAlert("success", response?.message);
       handleNew();
       const actionExists = userAction.some((action) => action.Action_Name === "New");
       if (!actionExists) {
@@ -487,7 +486,7 @@ export default function UserDetails({
       }
     }
     else {
-      showAlert("info", response?.message);
+      uiShowAlert("info", response?.message);
     }
   };
 
@@ -526,7 +525,7 @@ export default function UserDetails({
       if (mainDetails?.ImagePath) {
         deleteUploadImage(Number(response?.result))
       }
-      showAlert("success", response?.message);
+      uiShowAlert("success", response?.message);
       handleNew();
       const actionExists = userAction.some((action) => action.Action_Name === "New");
       if (!actionExists) {
@@ -577,7 +576,7 @@ export default function UserDetails({
         if (!allowedExtensionsUser.includes(fileExtension)) {
 
 
-          showAlert('info', `Allowed file Type : ${allowedExtensionsUser.join(', ')}`);
+          uiShowAlert('info', `Allowed file Type : ${allowedExtensionsUser.join(', ')}`);
           return;
         }
         const reader = new FileReader();
@@ -672,7 +671,7 @@ export default function UserDetails({
 
       if (response?.status === "Success") {
 
-        showAlert("success", response?.message)
+        uiShowAlert("success", response?.message)
 
         setMainDetails((prev) => ({
           ...prev,

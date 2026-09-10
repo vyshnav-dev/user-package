@@ -8,8 +8,6 @@ var axios = require('axios');
 var material = require('@mui/material');
 var Breadcrumbs = require('@mui/material/Breadcrumbs');
 var NavigateNextIcon = require('@mui/icons-material/NavigateNext');
-require('@mui/material/Alert');
-var jsxRuntime = require('react/jsx-runtime');
 var Box = require('@mui/material/Box');
 var Table = require('@mui/material/Table');
 var TableBody = require('@mui/material/TableBody');
@@ -26,6 +24,7 @@ var FitScreenIcon = require('@mui/icons-material/FitScreen');
 var FullscreenIcon = require('@mui/icons-material/Fullscreen');
 var ChevronRightIcon = require('@mui/icons-material/ChevronRight');
 var AttachmentIcon = require('@mui/icons-material/Attachment');
+var jsxRuntime = require('react/jsx-runtime');
 var Dialog = require('@mui/material/Dialog');
 var DialogContent = require('@mui/material/DialogContent');
 var IconButton = require('@mui/material/IconButton');
@@ -1061,11 +1060,6 @@ const securityApis = () => {
     syncmaster,
     GetTagList
   };
-};
-
-const AlertContext = /*#__PURE__*/React.createContext();
-const useAlert = () => {
-  return React.useContext(AlertContext);
 };
 
 function TableButton({
@@ -2757,9 +2751,6 @@ function UserSummary({
   const [refreshFlag, setrefreshFlag] = React__default["default"].useState(true); //To take data from Data base
   const [searchKey, setsearchKey] = React.useState(""); //Table Searching
   const [totalPages, setTotalPages] = React.useState(null);
-  const {
-    showAlert
-  } = useAlert();
   const [confirmAlert, setConfirmAlert] = React.useState(false); //To handle alert open
   const [confirmData, setConfirmData] = React.useState({}); //To pass alert data
   const latestSearchKeyRef = React.useRef(searchKey);
@@ -4264,9 +4255,6 @@ function UserInputField({
   const [tabPressed, setTabPressed] = React.useState(false);
   const [timeFormat, setTimeFormat] = React.useState('24h');
   const [isPickerSupported, setIsPickerSupported] = React.useState(false);
-  const {
-    showAlert
-  } = useAlert();
   const inputRef = React.useRef(null);
 
   // Detect browser's time format and picker support
@@ -5081,9 +5069,6 @@ function InputCommon({
   DecimalPoints,
   onKeyDown
 }) {
-  const {
-    showAlert
-  } = useAlert();
   const [inputValue, setInputValue] = React.useState(value || "");
   const [isBlurred, setIsBlurred] = React.useState(false);
   const [fieldKey, setFieldKey] = React.useState(0);
@@ -5199,7 +5184,7 @@ function InputCommon({
           // return;  // Prevent updating the value when less than MinimumValue
         }
         if (errorResponse == errorMessages.regexFailed) {
-          //showAlert("info", `Regular expresion mismatch`);
+          //uiShowAlert("info", `Regular expresion mismatch`);
           newValue = "";
           // return;  // Prevent updating the value when less than MinimumValue
         }
@@ -5391,7 +5376,7 @@ function InputCommon({
         // Regular expression validation for text fields
         if (RegularExpression) {
           if (errorResponse == errorMessages.regexFailed) {
-            //showAlert("info", `regular expression mismatch`);
+            //uiShowAlert("info", `regular expression mismatch`);
             newValue = "";
             // return;  // Prevent updating the value when less than MinimumValue
           }
@@ -5465,7 +5450,7 @@ function InputCommon({
 
       // Allow only integers if field type is integer
       // if (['tiny integer','small integer', 'big integer', 'integer'].includes(type) && newValue && !AllowNegative && newValue < 0) {
-      //   showAlert('info', 'Negative values are not allowed');
+      //   uiShowAlert('info', 'Negative values are not allowed');
       //   newValue = 0;
       // }
       if ([InputType.tinyinteger, InputType.smallinteger, InputType.integer].includes(type) && newValue) {
@@ -5599,7 +5584,7 @@ function InputCommon({
         // Check if regular expression is provided for decimal precision
         if (RegularExpression && maxFractionDigits) {
           if (!regex.test(newValue)) {
-            //showAlert("info", `regular expression mismatch`);
+            //uiShowAlert("info", `regular expression mismatch`);
             return; // Reset value if it doesn't match the regular expression
           }
         }
@@ -6132,9 +6117,6 @@ function ResetPasswordAlert({
     updateuserpassword
   } = securityApis();
   material.useTheme();
-  const {
-    showAlert
-  } = useAlert();
   const [formData, setFormData] = React.useState({
     password: "",
     CPassword: ""
@@ -6149,7 +6131,7 @@ function ResetPasswordAlert({
     //     formData.password
     //   )
     // ) {
-    //   showAlert(
+    //   uiShowAlert(
     //     "info",
     //     `Password must be at least 6 characters long and include at least one letter, one number, and one special character.`
     //   );
@@ -7004,9 +6986,6 @@ function UserDetails({
     getpasswordpolicyregex,
     GetTagList
   } = securityApis();
-  const {
-    showAlert
-  } = useAlert();
 
   //   useEffect(() => {
   //   fetchPasswordPolicy();

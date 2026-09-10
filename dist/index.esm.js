@@ -1,12 +1,10 @@
 import * as React from 'react';
-import React__default, { useContext, createContext, useState, useRef, useEffect, createElement, useMemo } from 'react';
+import React__default, { useState, useRef, useEffect, createElement, useMemo, useContext, createContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Button, Autocomplete, Paper, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Tooltip, IconButton as IconButton$1, useTheme, Box as Box$1, Stack, ListSubheader, InputAdornment, Dialog as Dialog$1, DialogContent as DialogContent$1, CircularProgress, styled as styled$1, Avatar } from '@mui/material';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import '@mui/material/Alert';
-import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -23,6 +21,7 @@ import FitScreenIcon from '@mui/icons-material/FitScreen';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AttachmentIcon from '@mui/icons-material/Attachment';
+import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
@@ -1003,11 +1002,6 @@ const securityApis = () => {
     syncmaster,
     GetTagList
   };
-};
-
-const AlertContext = /*#__PURE__*/createContext();
-const useAlert = () => {
-  return useContext(AlertContext);
 };
 
 function TableButton({
@@ -2699,9 +2693,6 @@ function UserSummary({
   const [refreshFlag, setrefreshFlag] = React__default.useState(true); //To take data from Data base
   const [searchKey, setsearchKey] = useState(""); //Table Searching
   const [totalPages, setTotalPages] = useState(null);
-  const {
-    showAlert
-  } = useAlert();
   const [confirmAlert, setConfirmAlert] = useState(false); //To handle alert open
   const [confirmData, setConfirmData] = useState({}); //To pass alert data
   const latestSearchKeyRef = useRef(searchKey);
@@ -4206,9 +4197,6 @@ function UserInputField({
   const [tabPressed, setTabPressed] = useState(false);
   const [timeFormat, setTimeFormat] = useState('24h');
   const [isPickerSupported, setIsPickerSupported] = useState(false);
-  const {
-    showAlert
-  } = useAlert();
   const inputRef = useRef(null);
 
   // Detect browser's time format and picker support
@@ -5023,9 +5011,6 @@ function InputCommon({
   DecimalPoints,
   onKeyDown
 }) {
-  const {
-    showAlert
-  } = useAlert();
   const [inputValue, setInputValue] = useState(value || "");
   const [isBlurred, setIsBlurred] = useState(false);
   const [fieldKey, setFieldKey] = useState(0);
@@ -5141,7 +5126,7 @@ function InputCommon({
           // return;  // Prevent updating the value when less than MinimumValue
         }
         if (errorResponse == errorMessages.regexFailed) {
-          //showAlert("info", `Regular expresion mismatch`);
+          //uiShowAlert("info", `Regular expresion mismatch`);
           newValue = "";
           // return;  // Prevent updating the value when less than MinimumValue
         }
@@ -5333,7 +5318,7 @@ function InputCommon({
         // Regular expression validation for text fields
         if (RegularExpression) {
           if (errorResponse == errorMessages.regexFailed) {
-            //showAlert("info", `regular expression mismatch`);
+            //uiShowAlert("info", `regular expression mismatch`);
             newValue = "";
             // return;  // Prevent updating the value when less than MinimumValue
           }
@@ -5407,7 +5392,7 @@ function InputCommon({
 
       // Allow only integers if field type is integer
       // if (['tiny integer','small integer', 'big integer', 'integer'].includes(type) && newValue && !AllowNegative && newValue < 0) {
-      //   showAlert('info', 'Negative values are not allowed');
+      //   uiShowAlert('info', 'Negative values are not allowed');
       //   newValue = 0;
       // }
       if ([InputType.tinyinteger, InputType.smallinteger, InputType.integer].includes(type) && newValue) {
@@ -5541,7 +5526,7 @@ function InputCommon({
         // Check if regular expression is provided for decimal precision
         if (RegularExpression && maxFractionDigits) {
           if (!regex.test(newValue)) {
-            //showAlert("info", `regular expression mismatch`);
+            //uiShowAlert("info", `regular expression mismatch`);
             return; // Reset value if it doesn't match the regular expression
           }
         }
@@ -6074,9 +6059,6 @@ function ResetPasswordAlert({
     updateuserpassword
   } = securityApis();
   useTheme();
-  const {
-    showAlert
-  } = useAlert();
   const [formData, setFormData] = useState({
     password: "",
     CPassword: ""
@@ -6091,7 +6073,7 @@ function ResetPasswordAlert({
     //     formData.password
     //   )
     // ) {
-    //   showAlert(
+    //   uiShowAlert(
     //     "info",
     //     `Password must be at least 6 characters long and include at least one letter, one number, and one special character.`
     //   );
@@ -6946,9 +6928,6 @@ function UserDetails({
     getpasswordpolicyregex,
     GetTagList
   } = securityApis();
-  const {
-    showAlert
-  } = useAlert();
 
   //   useEffect(() => {
   //   fetchPasswordPolicy();

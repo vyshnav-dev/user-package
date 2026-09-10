@@ -1,7 +1,7 @@
 import { TextField, useTheme } from '@mui/material';
 import React, { useState } from 'react';
 import { styled } from '@mui/system';
-import { useAlert } from '../../component/Alerts/AlertContext';
+import { showAlert as uiShowAlert, setLoader as uiSetLoader } from "../../uiStore";
 import { useEffect } from 'react';
 
 const CustomTextField = styled(TextField)({
@@ -24,7 +24,7 @@ const CustomTextField = styled(TextField)({
 
 export default function InputTag_noLabel({ name, type, disabled, value, setValue, width, multiline, maxLength, onBlur,languageName }) {
  
-  const { showAlert } = useAlert();
+  
 
  
 
@@ -51,7 +51,7 @@ export default function InputTag_noLabel({ name, type, disabled, value, setValue
 
     if (newValue && maxLength && newValue.length > maxLength) {
       newValue = newValue.substring(0, maxLength);
-      showAlert('info', `Maximum limit of characters reached`);
+      uiShowAlert('info', `Maximum limit of characters reached`);
     }
 
     setValue({ name, value: newValue });
@@ -70,7 +70,7 @@ export default function InputTag_noLabel({ name, type, disabled, value, setValue
   //   let value = event.target.value || null;
   //   if (value && maxLength && value.length > maxLength) {
   //     value = value.substring(0, maxLength);
-  //     showAlert('info', `Maximum limit of characters reached`);
+  //     uiShowAlert('info', `Maximum limit of characters reached`);
   //   }
   //   setValue({ name, value });
   // };
@@ -83,7 +83,7 @@ export default function InputTag_noLabel({ name, type, disabled, value, setValue
 
     if (newValue && maxLength && newValue.length > maxLength) {
       newValue = newValue.substring(0, maxLength);
-      showAlert('info', `Maximum limit of characters reached`);
+      uiShowAlert('info', `Maximum limit of characters reached`);
     }
 
     setInputValue(newValue); // Update the local state as the user types

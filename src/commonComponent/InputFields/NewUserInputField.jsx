@@ -1,7 +1,7 @@
 import { TextField, FormLabel, Button, Box, Popover, IconButton, InputAdornment } from "@mui/material";
 import React, { useState, useEffect, useRef } from "react";
 import { styled } from "@mui/system";
-import { useAlert } from "../Alerts/AlertContext";
+import { showAlert as uiShowAlert, setLoader as uiSetLoader } from "../../uiStore";
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloseIcon from '@mui/icons-material/Close';
@@ -133,7 +133,6 @@ export default function NewUserInputField({
     const [timeFormat, setTimeFormat] = useState('24h');
     const [isPickerSupported, setIsPickerSupported] = useState(false);
     const [isFirefoxBrowser, setIsFirefoxBrowser] = useState(false);
-    const { showAlert } = useAlert();
     const inputRef = useRef(null);
 
     // Compute min/max based on dateType
@@ -323,7 +322,7 @@ export default function NewUserInputField({
             }
         } else if (type === "time") {
             if (inputValue && !/^\d{1,2}:\d{2}$/.test(inputValue) && !/^\d{1,2}:\d{2}\s*(AM|PM|am|pm)?$/i.test(inputValue)) {
-                showAlert("warning", "Please enter time in HH:MM format");
+                uiShowAlert("warning", "Please enter time in HH:MM format");
             }
         }
 
@@ -340,7 +339,7 @@ export default function NewUserInputField({
 
     const handleKeyDown = (event) => {
         if (event.target.value.length === maxLength) {
-            showAlert("info", "Maximum length reached");
+            uiShowAlert("info", "Maximum length reached");
         }
         if (event.key === "Tab") {
             setTabPressed(true);

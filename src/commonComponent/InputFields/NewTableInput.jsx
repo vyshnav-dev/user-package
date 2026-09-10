@@ -4,7 +4,6 @@ import { styled } from "@mui/system";
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloseIcon from '@mui/icons-material/Close';
-import { useAlert } from "../Alerts/AlertContext";
 
 const CustomTextField = styled(TextField)({
   "& .MuiInputBase-root": {
@@ -674,7 +673,6 @@ export default function NewTableInput({
   const [tabPressed, setTabPressed] = useState(false);
   const [isFirefoxBrowser, setIsFirefoxBrowser] = useState(false);
   const [timeFormat, setTimeFormat] = useState('24h');
-  const { showAlert } = useAlert();
 
   useEffect(() => {
     setIsFirefoxBrowser(isFirefox());

@@ -7,8 +7,6 @@ import {
   Paper,
 } from "@mui/material";
 import { debounce } from "lodash";
-
-import { useAlert } from "../../Alerts/AlertContext"; 
 import { MastersTagId, secondaryColor, thirdColor } from "../../../config/config";
 
 export default function MasterUnitTableAutoComplete({
@@ -31,7 +29,6 @@ export default function MasterUnitTableAutoComplete({
   const [autoCompleteKey, setAutoCompleteKey] = useState(0);
   const focusedRef = useRef(false);
   const highlightRef = useRef(false);
-  const { showAlert } = useAlert();
 
   const handleAutocompleteChange = (event,newValue) => {
     

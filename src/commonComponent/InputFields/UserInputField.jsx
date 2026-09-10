@@ -1,7 +1,7 @@
 import { TextField, useTheme } from "@mui/material";
 import React, { useState, useEffect, useRef } from "react";
 import { styled } from "@mui/system";
-import { useAlert } from "../Alerts/AlertContext";
+import { showAlert as uiShowAlert, setLoader as uiSetLoader } from "../../uiStore";
 
 const CustomTextField = styled(TextField)({
   '& .MuiInputBase-root': {
@@ -87,7 +87,6 @@ export default function UserInputField({
   const [tabPressed, setTabPressed] = useState(false);
   const [timeFormat, setTimeFormat] = useState('24h');
   const [isPickerSupported, setIsPickerSupported] = useState(false);
-  const { showAlert } = useAlert();
   const inputRef = useRef(null);
 
   // Detect browser's time format and picker support
@@ -123,7 +122,7 @@ export default function UserInputField({
       // For time inputs, we'll accept various formats but store in 24-hour format
       if (inputValue && !/^\d{1,2}:\d{2}$/.test(inputValue) && !/^\d{1,2}:\d{2}\s*(AM|PM|am|pm)?$/i.test(inputValue)) {
         // Show gentle warning but don't prevent input
-        showAlert("warning", "Please enter time in HH:MM format");
+        uiShowAlert("warning", "Please enter time in HH:MM format");
       }
     }
 
@@ -141,7 +140,7 @@ export default function UserInputField({
     let inputValue = event.target.value;
     
     if (inputValue.length === maxLength) { 
-      showAlert("info", "Maximum length reached");
+      uiShowAlert("info", "Maximum length reached");
     }
     
     if (event.key === "Tab") {

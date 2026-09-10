@@ -1,7 +1,7 @@
 import { TextField, useTheme } from '@mui/material'
 import React from 'react'
 import { styled } from '@mui/system';
-import { useAlert } from '../Alerts/AlertContext';
+import { showAlert as uiShowAlert, setLoader as uiSetLoader } from "../../uiStore";
 import { useState } from 'react';
 
 const CustomTextField = styled(TextField)({
@@ -32,7 +32,6 @@ const CustomTextField = styled(TextField)({
 export default function InputTag({key,name, label,type,disabled,value,setValue,width,multiline,mandatory,onBlur,maxLength,onClick}) {
   
   const theme = useTheme();
-  const { showAlert } = useAlert();
 
 
   const [isBlurred, setIsBlurred] = useState(false);
@@ -56,7 +55,7 @@ export default function InputTag({key,name, label,type,disabled,value,setValue,w
     
     if (value && maxLength && value?.length > maxLength) {
       value = value.substring(0, maxLength);  // Truncate the value to max length
-      showAlert('info', `Maximum limit of ${label} characters reached`);
+      uiShowAlert('info', `Maximum limit of ${label} characters reached`);
     }
     if(value)
     setValue({name,value});  

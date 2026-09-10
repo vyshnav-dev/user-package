@@ -10,7 +10,7 @@ import {
   MDBModalFooter,
 } from "mdb-react-ui-kit";
 import { Box, TextField, Tooltip, Typography, useTheme } from "@mui/material";
-import { useAlert } from "./AlertContext";
+import { showAlert as uiShowAlert, setLoader as uiSetLoader } from "../../uiStore";
 import { encrypt } from "../../Infrastructure/security/encryptionUtils";
 import UserInputField from "../InputFields/UserInputField";
 import { securityApis } from "../../Infrastructure/security/security";
@@ -24,7 +24,6 @@ export default function ResetPasswordAlert({
   const { updateuserpassword } = securityApis();
   
   const themes = useTheme();
-  const { showAlert } = useAlert();
   const [formData, setFormData] = useState({
     password: "",
     CPassword: "",
@@ -32,7 +31,7 @@ export default function ResetPasswordAlert({
 
   const handleResetPassword = async () => {
     if (!formData?.password) {
-      showAlert("info", "Please Provide new password");
+      uiShowAlert("info", "Please Provide new password");
       return;
     }
     // if (
@@ -40,7 +39,7 @@ export default function ResetPasswordAlert({
     //     formData.password
     //   )
     // ) {
-    //   showAlert(
+    //   uiShowAlert(
     //     "info",
     //     `Password must be at least 6 characters long and include at least one letter, one number, and one special character.`
     //   );
@@ -48,15 +47,15 @@ export default function ResetPasswordAlert({
     // }
     const regex = new RegExp(passwordPolicy?.PolicyRegExp ?? "^.*$");
     if (!regex.test(formData.password)) {
-      showAlert("info", passwordPolicy?.Description || "Password does not meet the required policy.");
+      uiShowAlert("info", passwordPolicy?.Description || "Password does not meet the required policy.");
       return;
     }
     if (passwordPolicy?.MinLength > 0 && formData.password.length < passwordPolicy.MinLength) {
-      showAlert("info", `Password must be at least ${passwordPolicy.MinLength} characters long.`);
+      uiShowAlert("info", `Password must be at least ${passwordPolicy.MinLength} characters long.`);
       return;
     }
     if (formData.password !== formData.CPassword) {
-      showAlert("info", `Password and Confirm Password mismatch`);
+      uiShowAlert("info", `Password and Confirm Password mismatch`);
       return;
     }
 
@@ -69,7 +68,7 @@ export default function ResetPasswordAlert({
             };
     const response = await updateuserpassword(saveData);
     if (response?.status === "Success") {
-      showAlert("success", response?.message);
+      uiShowAlert("success", response?.message);
       handleClose();
       setFormData({ userId: 0, password: "" });
     }
