@@ -10,8 +10,7 @@
     "rowsPerSheet":50000,
     "ChannelId":1,
     "allowedExtensionsUser":["jpg", "jpeg", "png", "gif"],
-    "transactionDateTimeFields":"Created At,Modified At,CreatedAt,ModifiedAt,Created On,CreatedOn,ModifiedOn,Modified On",
-    "FolderPath":"/TimeCapturingAndMonitoringSystem/WWPS/UI/"
+    "transactionDateTimeFields":"Created At,Modified At,CreatedAt,ModifiedAt,Created On,CreatedOn,ModifiedOn,Modified On"
     
     
 }

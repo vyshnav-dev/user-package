@@ -38,7 +38,6 @@ export const getConfig = () => {
     profileDateFields=config.profileDateFields
     rowEvenColor = config.rowEvenColor
     ChannelId = config.ChannelId
-    FolderPath = config.FolderPath
     SecurityBaseUrl = config.SecurityBaseUrl
     allowedExtensionsUser = config.allowedExtensionsUser
     transactionDateTimeFields = config.transactionDateTimeFields
