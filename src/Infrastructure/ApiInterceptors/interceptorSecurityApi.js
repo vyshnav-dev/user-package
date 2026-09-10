@@ -1,6 +1,9 @@
 import { SecurityBaseUrl } from "../../config/config";
 import { securityApi } from "../../config/axios";
-import { refreshToken } from "./tokenUtils";
+import {
+  refreshToken,
+  getAccessToken as storeGetAccessToken,
+} from "./tokenUtils";
 import { useAlert } from "../../commonComponent/Alerts/AlertContext";
 
 let isRefreshing = false;
@@ -56,11 +59,13 @@ const addRequestToQueue = (originalRequest) => {
   });
 };
 
-// Interceptor for API requests
+// ---------------- REQUEST INTERCEPTOR ----------------
 securityApi.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem("TimeCaptureAccessToken");
-    
+    // ✅ Read from in-memory store first, fall back to localStorage
+    const accessToken =
+      storeGetAccessToken() || localStorage.getItem("TimeCaptureAccessToken");
+
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -71,68 +76,68 @@ securityApi.interceptors.request.use(
   }
 );
 
+// ---------------- RESPONSE INTERCEPTOR ----------------
 securityApi.interceptors.response.use(
   (response) => {
     return response.data;
   },
   async (error) => {
     const originalRequest = error.config;
-    
-    // Check if error is 401 and we haven't retried yet
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
-      
-      // Handle refreshing token
+
+    // 401 → try refreshing token
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
       if (!isRefreshing) {
         isRefreshing = true;
-        
+
         try {
           const newToken = await refreshToken(SecurityBaseUrl);
-          
+
           isRefreshing = false;
-          
-          // Update default headers with new token
-          securityApi.defaults.headers.common["Authorization"] = "Bearer " + newToken;
-          
-          // Process queued requests with new token
+          securityApi.defaults.headers.common["Authorization"] =
+            "Bearer " + newToken;
+
           processQueue(null, newToken);
-          
-          // Retry original request with new token
+
           originalRequest._retry = true;
           originalRequest.headers["Authorization"] = "Bearer " + newToken;
-          
+
           return securityApi(originalRequest);
         } catch (refreshError) {
           console.error("Token refresh failed:", refreshError);
-          
-          // Clear tokens and process queue with error
+
           localStorage.removeItem("TimeCaptureAccessToken");
           localStorage.removeItem("TimeCaptureRefreshToken");
-          localStorage.removeItem('TimeCaptureUserData');
+          localStorage.removeItem("TimeCaptureUserData");
           localStorage.removeItem("TimeCaptureSessionId");
+
           processQueue(refreshError, null);
           isRefreshing = false;
-          
-          // Navigate to login
+
           navigateTo("/");
-          
+
           return Promise.reject(refreshError);
         }
       } else {
-        // If refresh is already in progress, queue the request
+        // Refresh already in progress — queue this request
         return addRequestToQueue(originalRequest);
       }
     }
-    
-    // For other errors, reject normally
+
     return Promise.reject(error);
   }
 );
 
-// Custom hook for API requests
+// ---------------- Custom hook ----------------
 const baseSecurityApis = () => {
   const { showAlert, setLoader } = useAlert();
 
-  const accessToken = localStorage.getItem("TimeCaptureAccessToken");
+  // ✅ Prefer in-memory store, fall back to localStorage
+  const accessToken =
+    storeGetAccessToken() || localStorage.getItem("TimeCaptureAccessToken");
 
   const handleError = (error) => {
     if (!navigator.onLine) {
@@ -140,15 +145,14 @@ const baseSecurityApis = () => {
       showAlert("warning", errorMessage);
       return;
     }
-    
-    const url = error?.response?.request?.responseURL;
-    
+
     if (error.response && error.response.status) {
       switch (error.response.status) {
-        case 400: // Bad request
+        case 400: {
           const result = error.response.data.result
             ? JSON.parse(error.response.data.result)
             : null;
+
           if (result && Array.isArray(result) && result[0]?.ErrorMessage) {
             showAlert("info", result[0]?.ErrorMessage);
           } else if (error?.response?.data?.statusCode == 4000) {
@@ -157,59 +161,67 @@ const baseSecurityApis = () => {
             error?.response?.data?.statusCode == 1000 ||
             error?.response?.data?.statusCode == 1001
           ) {
-            const dbErrorMessage = "Database Error";
-            showAlert("error", dbErrorMessage);
+            showAlert("error", "Database Error");
           } else {
             showAlert("error", error?.response?.data?.message);
           }
           break;
-          
-        case 401: // Unauthorized
+        }
+
+        case 401:
           // Handled by interceptor
           break;
-          
-        case 403: // Forbidden
-          const authorizationErrors = "Access denied, you do not have permission";
-          showAlert("warning", authorizationErrors);
+
+        case 403:
+          showAlert(
+            "warning",
+            "Access denied, you do not have permission"
+          );
           break;
-          
-        case 404: // Not Found
+
+        case 404:
           if (error.response.statusText == "Not Found") {
             const dbNoData = error?.response?.data?.message;
             return;
           }
           break;
-          
-        case 409: // Conflict
+
+        case 409:
           showAlert("error", error?.response?.data?.message);
           break;
-          
-        case 500: // Server Error
-          const errorMessage = "Server error, please try again later";
+
+        case 500:
           if (error?.response?.data?.statusCode == 5000 && accessToken) {
             return;
           }
           break;
-          
+
         default:
           break;
       }
     } else {
-      console.error('An error occurred:', error.message);
+      console.error("An error occurred:", error.message);
     }
   };
 
-  const makeAuthorizedRequestBaseSecurity = async (method, url, params, isLoading = true) => {
+  const makeAuthorizedRequestBaseSecurity = async (
+    method,
+    url,
+    params,
+    isLoading = true
+  ) => {
     if (isLoading) {
       setLoader(true);
     }
-    
-    const token = localStorage.getItem("TimeCaptureAccessToken");
+
+    // ✅ Read token fresh at call time
+    const token =
+      storeGetAccessToken() || localStorage.getItem("TimeCaptureAccessToken");
+
     const headers = {
       Authorization: `Bearer ${token}`,
     };
 
-    // Handle Content-Type for FormData
     if (params instanceof FormData) {
       delete headers["Content-Type"];
     } else {
@@ -218,15 +230,20 @@ const baseSecurityApis = () => {
 
     try {
       let response;
-      
+
       if (method === "get") {
         const queryParams = params
           ? Object.keys(params)
-              .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+              .map(
+                (key) =>
+                  `${encodeURIComponent(key)}=${encodeURIComponent(
+                    params[key]
+                  )}`
+              )
               .join("&")
           : "";
         const requestUrl = queryParams ? `${url}?${queryParams}` : url;
-        
+
         response = await securityApi.get(requestUrl, { headers });
       } else {
         response = await securityApi({
