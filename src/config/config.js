@@ -1,7 +1,6 @@
-export let baseUrl = null
+
 export let config = null;
 export let config1 = null;
-export let logoImage = null
 export let primaryColor = null
 export let secondaryColor = null
 export let thirdColor = null
@@ -28,8 +27,6 @@ export const getConfig = () => {
     config = await response.json();
     const response1 = await fetch('./masterDocType.json');
     config1 = await response1.json();
-    baseUrl = config.baseUrl;
-    logoImage=config.logo
     primaryColor=config.primaryColor
     secondaryColor=config.secondaryColor
     thirdColor=config.thirdColor
